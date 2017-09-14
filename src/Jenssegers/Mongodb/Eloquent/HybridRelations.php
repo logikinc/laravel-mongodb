@@ -1,11 +1,8 @@
-<?php
-
-namespace Jenssegers\Mongodb\Eloquent;
+<?php namespace Jenssegers\Mongodb\Eloquent;
 
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Str;
-use Jenssegers\Mongodb\Helpers\EloquentBuilder;
 use Jenssegers\Mongodb\Relations\BelongsTo;
 use Jenssegers\Mongodb\Relations\BelongsToMany;
 use Jenssegers\Mongodb\Relations\HasMany;
@@ -25,17 +22,18 @@ trait HybridRelations
     public function hasOne($related, $foreignKey = null, $localKey = null)
     {
         // Check if it is a relation with an original model.
-        if (!is_subclass_of($related, \Jenssegers\Mongodb\Eloquent\Model::class)) {
+        if (!is_subclass_of($related, \Jenssegers\Mongodb\Eloquent\Model::class))
+        {
             return parent::hasOne($related, $foreignKey, $localKey);
         }
 
-        $foreignKey = $foreignKey ?: $this->getForeignKey();
+        $foreignKey = $foreignKey ? : $this->getForeignKey();
 
         $instance = new $related;
 
-        $localKey = $localKey ?: $this->getKeyName();
+        $localKey = $localKey ? : $this->getKeyName();
 
-        return new HasOne($instance->newQuery(), $this, $foreignKey, $localKey);
+        return new HasOne($instance->newQuery() , $this, $foreignKey, $localKey);
     }
 
     /**
@@ -51,7 +49,8 @@ trait HybridRelations
     public function morphOne($related, $name, $type = null, $id = null, $localKey = null)
     {
         // Check if it is a relation with an original model.
-        if (!is_subclass_of($related, \Jenssegers\Mongodb\Eloquent\Model::class)) {
+        if (!is_subclass_of($related, \Jenssegers\Mongodb\Eloquent\Model::class))
+        {
             return parent::morphOne($related, $name, $type, $id, $localKey);
         }
 
@@ -59,9 +58,9 @@ trait HybridRelations
 
         list($type, $id) = $this->getMorphs($name, $type, $id);
 
-        $localKey = $localKey ?: $this->getKeyName();
+        $localKey = $localKey ? : $this->getKeyName();
 
-        return new MorphOne($instance->newQuery(), $this, $type, $id, $localKey);
+        return new MorphOne($instance->newQuery() , $this, $type, $id, $localKey);
     }
 
     /**
@@ -75,17 +74,18 @@ trait HybridRelations
     public function hasMany($related, $foreignKey = null, $localKey = null)
     {
         // Check if it is a relation with an original model.
-        if (!is_subclass_of($related, \Jenssegers\Mongodb\Eloquent\Model::class)) {
+        if (!is_subclass_of($related, \Jenssegers\Mongodb\Eloquent\Model::class))
+        {
             return parent::hasMany($related, $foreignKey, $localKey);
         }
 
-        $foreignKey = $foreignKey ?: $this->getForeignKey();
+        $foreignKey = $foreignKey ? : $this->getForeignKey();
 
         $instance = new $related;
 
-        $localKey = $localKey ?: $this->getKeyName();
+        $localKey = $localKey ? : $this->getKeyName();
 
-        return new HasMany($instance->newQuery(), $this, $foreignKey, $localKey);
+        return new HasMany($instance->newQuery() , $this, $foreignKey, $localKey);
     }
 
     /**
@@ -101,7 +101,8 @@ trait HybridRelations
     public function morphMany($related, $name, $type = null, $id = null, $localKey = null)
     {
         // Check if it is a relation with an original model.
-        if (!is_subclass_of($related, \Jenssegers\Mongodb\Eloquent\Model::class)) {
+        if (!is_subclass_of($related, \Jenssegers\Mongodb\Eloquent\Model::class))
+        {
             return parent::morphMany($related, $name, $type, $id, $localKey);
         }
 
@@ -114,9 +115,9 @@ trait HybridRelations
 
         $table = $instance->getTable();
 
-        $localKey = $localKey ?: $this->getKeyName();
+        $localKey = $localKey ? : $this->getKeyName();
 
-        return new MorphMany($instance->newQuery(), $this, $type, $id, $localKey);
+        return new MorphMany($instance->newQuery() , $this, $type, $id, $localKey);
     }
 
     /**
@@ -133,21 +134,24 @@ trait HybridRelations
         // If no relation name was given, we will use this debug backtrace to extract
         // the calling method's name and use that as the relationship name as most
         // of the time this will be what we desire to use for the relationships.
-        if (is_null($relation)) {
+        if (is_null($relation))
+        {
             list($current, $caller) = debug_backtrace(false, 2);
 
             $relation = $caller['function'];
         }
 
         // Check if it is a relation with an original model.
-        if (!is_subclass_of($related, \Jenssegers\Mongodb\Eloquent\Model::class)) {
+        if (!is_subclass_of($related, \Jenssegers\Mongodb\Eloquent\Model::class))
+        {
             return parent::belongsTo($related, $foreignKey, $otherKey, $relation);
         }
 
         // If no foreign key was supplied, we can use a backtrace to guess the proper
         // foreign key name by using the name of the relationship function, which
         // when combined with an "_id" should conventionally match the columns.
-        if (is_null($foreignKey)) {
+        if (is_null($foreignKey))
+        {
             $foreignKey = Str::snake($relation) . '_id';
         }
 
@@ -158,7 +162,7 @@ trait HybridRelations
         // actually be responsible for retrieving and hydrating every relations.
         $query = $instance->newQuery();
 
-        $otherKey = $otherKey ?: $instance->getKeyName();
+        $otherKey = $otherKey ? : $instance->getKeyName();
 
         return new BelongsTo($query, $this, $foreignKey, $otherKey, $relation);
     }
@@ -176,7 +180,8 @@ trait HybridRelations
         // If no name is provided, we will use the backtrace to get the function name
         // since that is most likely the name of the polymorphic interface. We can
         // use that to get both the class and foreign key that will be utilized.
-        if (is_null($name)) {
+        if (is_null($name))
+        {
             list($current, $caller) = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
 
             $name = Str::snake($caller['function']);
@@ -187,23 +192,21 @@ trait HybridRelations
         // If the type value is null it is probably safe to assume we're eager loading
         // the relationship. When that is the case we will pass in a dummy query as
         // there are multiple types in the morph and we can't use single queries.
-        if (is_null($class = $this->$type)) {
-            return new MorphTo(
-                $this->newQuery(), $this, $id, null, $type, $name
-            );
+        if (is_null($class = $this->$type))
+        {
+            return new MorphTo($this->newQuery() , $this, $id, null, $type, $name);
         }
 
         // If we are not eager loading the relationship we will essentially treat this
         // as a belongs-to style relationship since morph-to extends that class and
         // we will pass in the appropriate values so that it behaves as expected.
-        else {
+        else
+        {
             $class = $this->getActualClassNameForMorph($class);
 
             $instance = new $class;
 
-            return new MorphTo(
-                $instance->newQuery(), $this, $id, $instance->getKeyName(), $type, $name
-            );
+            return new MorphTo($instance->newQuery() , $this, $id, $instance->getKeyName() , $type, $name);
         }
     }
 
@@ -212,38 +215,43 @@ trait HybridRelations
      *
      * @param  string $related
      * @param  string $collection
-     * @param  string $foreignKey
-     * @param  string $otherKey
+     * @param  string $foreignPivotKey
+     * @param  string $relatedPivotKey
+     * @param  string $parentKey
+     * @param  string $relatedKey
      * @param  string $relation
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function belongsToMany($related, $collection = null, $foreignKey = null, $otherKey = null, $relation = null)
+    public function belongsToMany($related, $collection = null, $foreignPivotKey = null, $relatedPivotKey = null, $parentKey = null, $relatedKey = null, $relation = null)
     {
         // If no relationship name was passed, we will pull backtraces to get the
         // name of the calling function. We will use that function name as the
         // title of this relation since that is a great convention to apply.
-        if (is_null($relation)) {
+        if (is_null($relation))
+        {
             $relation = $this->guessBelongsToManyRelation();
         }
 
         // Check if it is a relation with an original model.
-        if (!is_subclass_of($related, \Jenssegers\Mongodb\Eloquent\Model::class)) {
-            return parent::belongsToMany($related, $collection, $foreignKey, $otherKey, $relation);
+        if (!is_subclass_of($related, \Jenssegers\Mongodb\Eloquent\Model::class))
+        {
+            return parent::belongsToMany($related, $collection = null, $foreignPivotKey = null, $relatedPivotKey = null, $parentKey = null, $relatedKey = null, $relation = null);
         }
 
         // First, we'll need to determine the foreign key and "other key" for the
         // relationship. Once we have determined the keys we'll make the query
         // instances as well as the relationship instances we need for this.
-        $foreignKey = $foreignKey ?: $this->getForeignKey() . 's';
+        $foreignPivotKey = $foreignPivotKey ? : $this->getForeignKey() . 's';
 
         $instance = new $related;
 
-        $otherKey = $otherKey ?: $instance->getForeignKey() . 's';
+        $relatedPivotKey = $relatedPivotKey ? : $instance->getForeignKey() . 's';
 
         // If no table name was provided, we can guess it by concatenating the two
         // models using underscores in alphabetical order. The two model names
         // are transformed to snake case from their default CamelCase also.
-        if (is_null($collection)) {
+        if (is_null($collection))
+        {
             $collection = $instance->getTable();
         }
 
@@ -252,7 +260,7 @@ trait HybridRelations
         // appropriate query constraint and entirely manages the hydrations.
         $query = $instance->newQuery();
 
-        return new BelongsToMany($query, $this, $collection, $foreignKey, $otherKey, $relation);
+        return new BelongsToMany($query, $this, $collection, $foreignPivotKey, $relatedPivotKey, $parentKey, $relatedKey, $relation);
     }
 
     /**
@@ -262,18 +270,11 @@ trait HybridRelations
      */
     protected function guessBelongsToManyRelation()
     {
-        if (method_exists($this, 'getBelongsToManyCaller')) {
+        if (method_exists($this, 'getBelongsToManyCaller'))
+        {
             return $this->getBelongsToManyCaller();
         }
 
         return parent::guessBelongsToManyRelation();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function newEloquentBuilder($query)
-    {
-        return new EloquentBuilder($query);
     }
 }
